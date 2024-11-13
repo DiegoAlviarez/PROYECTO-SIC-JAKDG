@@ -49,7 +49,10 @@ fecha_hoy = datetime.today()
 with st.container():
     st.subheader("Datos de Jugadores")
     st.write("Tabla de datos de los valores de mercado de los jugadores.")
-    st.dataframe(data)  # Mostrar el DataFrame en un contenedor separado
+
+    # Convertir URLs en la columna 'Jugador' a imágenes HTML y mostrar la tabla
+    st.write(data.to_html(escape=False, formatters={'Jugador': lambda url: f'<img src="{url}" width="50">'}), unsafe_allow_html=True)
+
 
 # Contenedor para seleccionar un jugador y mostrar su gráfica
 with st.container():
