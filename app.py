@@ -129,37 +129,6 @@ with st.container():
     fig_todos = graficar_todos_los_jugadores()
     st.plotly_chart(fig_todos)
 
-import streamlit as st
-import pandas as pd
-import requests
-from PIL import Image
-from io import BytesIO
 
-# Enlace directo al archivo raw en GitHub
-file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados.csv'
 
-# Cargar el archivo CSV desde GitHub
-data = pd.read_csv(file_path)
-
-# Contenedor para mostrar la tabla con imágenes
-with st.container():
-    st.subheader("Datos de Jugadores")
-    st.write("Tabla de datos de los valores de mercado de los jugadores con sus imágenes.")
-
-    # Crear una lista de filas para mostrar con imágenes
-    for i, row in data.iterrows():
-        col1, col2 = st.columns([1, 5])
-        with col1:
-            # Mostrar la imagen desde la URL en la columna "Jugador"
-            try:
-                response = requests.get(row['Jugador'])
-                img = Image.open(BytesIO(response.content))
-                st.image(img, width=50)
-            except:
-                st.write("Imagen no disponible")
-        with col2:
-            # Mostrar los demás datos del jugador
-            st.write(row.drop(labels=['Jugador']).to_dict())
-
-# Aquí puedes agregar otras secciones de tu app si tienes gráficos, tablas o análisis adicionales
 
