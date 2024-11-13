@@ -51,8 +51,8 @@ with st.container():
     st.write("Tabla de datos de los valores de mercado de los jugadores.")
 
     # Convertir URLs en la columna 'Jugador' a imágenes HTML y mostrar la tabla
-    st.write(data.to_html(escape=False, formatters={'Jugador': lambda url: f'<img src="{url}" width="50">'}), unsafe_allow_html=True)
-
+    data['Jugador'] = data['Jugador'].apply(lambda url: f'<img src="{url}" width="50">')
+    st.write(data.to_html(escape=False), unsafe_allow_html=True)
 
 # Contenedor para seleccionar un jugador y mostrar su gráfica
 with st.container():
