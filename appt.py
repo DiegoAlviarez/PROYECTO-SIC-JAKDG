@@ -23,8 +23,8 @@ lottie_coding = load_lottieurl(lottie_url)
 if lottie_coding:
     st_lottie(lottie_coding, height=200, width=300)
 
-# Cargar el archivo CSV desde GitHub
-file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados.csv'
+# Cargar el archivo CSV desde GitHub (Nuevo CSV)
+file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados%20(3).csv'
 data = pd.read_csv(file_path)
 
 # Función para convertir los valores de mercado a euros completos (enteros)
@@ -114,4 +114,5 @@ with st.container():
 
     fig_todos = graficar_todos_los_jugadores()
     st.plotly_chart(fig_todos)
+
 
