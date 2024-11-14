@@ -23,9 +23,6 @@ lottie_coding = load_lottieurl(lottie_url)
 if lottie_coding:
     st_lottie(lottie_coding, height=200, width=300)
 
-# Cargar el archivo CSV desde GitHub
-file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados.csv'
-data = pd.read_csv(file_path)
 
 # Función para convertir los valores de mercado a euros completos (enteros)
 def convertir_valor(valor):
@@ -71,6 +68,23 @@ with st.container():
     st.write("Tabla completa con imágenes de los jugadores y valores de mercado.")
     # Renderizar la tabla con HTML para mostrar las imágenes
     st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
+
+file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados.csv'
+data = pd.read_csv(file_path)
+
+# Función para convertir los valores de mercado a euros completos (enteros)
+def convertir_valor(valor):
+    if isinstance(valor, str):
+        if "mil €" in valor:
+            return int(float(valor.replace(" mil €", "").replace(",", ".")) * 1_000)
+        elif "mill. €" in valor:
+            return int(float(valor.replace(" mill. €", "").replace(",", ".")) * 1_000_000)
+    return None
+
+# Verificar y convertir las columnas de valores de mercado
+if 'Valor de Mercado en 01/01/2024' in data.columns and 'Valor de Mercado Actual' in data.columns:
+    data["Valor de Mercado en 01/01/2024"] = data["Valor de Mercado en 01/01/2024"].apply(convertir_valor)
+    data["Valor de Mercado Actual"] = data["Valor de Mercado Actual"].apply(convertir_valor)
 
 # Contenedor para seleccionar un jugador y mostrar su gráfica
 with st.container():
