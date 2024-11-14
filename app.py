@@ -23,8 +23,8 @@ lottie_coding = load_lottieurl(lottie_url)
 if lottie_coding:
     st_lottie(lottie_coding, height=200, width=300)
 
-# Cargar el archivo CSV desde GitHub
-file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados.csv'
+# Cargar el archivo CSV desde GitHub (Nuevo CSV)
+file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados%20(3).csv'
 data = pd.read_csv(file_path)
 
 # Función para convertir los valores de mercado a euros completos (enteros)
@@ -45,11 +45,22 @@ if 'Valor de Mercado en 01/01/2024' in data.columns and 'Valor de Mercado Actual
 fecha_inicio = datetime(2024, 1, 1)
 fecha_hoy = datetime.today()
 
-# Contenedor para mostrar la tabla
+# Función para convertir URLs a imágenes en cualquier columna
+def convertir_urls_a_imagenes(df):
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if df_copy[col].astype(str).str.startswith('http').any():
+            df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
+    return df_copy
+
+# Convertir las URLs en imágenes para la tabla
+data_con_imagenes = convertir_urls_a_imagenes(data)
+
+# Mostrar la tabla con imágenes de los jugadores
 with st.container():
     st.subheader("Datos de Jugadores")
-    st.write("Tabla de datos de los valores de mercado de los jugadores.")
-    st.dataframe(data)  # Mostrar el DataFrame en un contenedor separado
+    st.write("Tabla con imágenes de los jugadores y valores de mercado.")
+    st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
 
 # Contenedor para seleccionar un jugador y mostrar su gráfica
 with st.container():
