@@ -136,3 +136,57 @@ with st.container():
 
     fig_todos = graficar_todos_los_jugadores()
     st.plotly_chart(fig_todos)
+
+
+# Contenedor para la gráfica de comparación de dos jugadores
+with st.container():
+    st.subheader("Comparación de Valor de Mercado entre dos Jugadores")
+    
+    # Función para convertir los valores de mercado a euros completos (enteros)
+    def convertir_valor(valor):
+        if isinstance(valor, str):
+            if "mil €" in valor:
+                return int(float(valor.replace(" mil €", "").replace(",", ".")) * 1_000)
+            elif "mill. €" in valor:
+                return int(float(valor.replace(" mill. €", "").replace(",", ".")) * 1_000_000)
+        return None
+
+    # Enlace directo al archivo raw en GitHub
+    file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados%20(3).csv'
+
+    # Cargar el archivo CSV desde GitHub
+    data = pd.read_csv(file_path)
+
+    # Verificar y convertir las columnas de valores de mercado
+    if 'Valor de Mercado en 01/01/2024' in data.columns and 'Valor de Mercado Actual' in data.columns:
+        data["Valor de Mercado en 01/01/2024"] = data["Valor de Mercado en 01/01/2024"].apply(convertir_valor)
+        data["Valor de Mercado Actual"] = data["Valor de Mercado Actual"].apply(convertir_valor)
+
+    # Selección de jugadores
+    jugador1 = st.selectbox("Selecciona el primer jugador:", data['Nombre'].unique())
+    jugador2 = st.selectbox("Selecciona el segundo jugador:", data['Nombre'].unique())
+
+    # Filtrar los datos de los jugadores seleccionados
+    jugador_data = data[data['Nombre'].isin([jugador1, jugador2])]
+
+    if len(jugador_data) == 2:
+        # Obtener los nombres y valores de mercado inicial y actual
+        nombres = jugador_data['Nombre'].values
+        valores_iniciales = jugador_data['Valor de Mercado en 01/01/2024'].values
+        valores_actuales = jugador_data['Valor de Mercado Actual'].values
+
+        # Crear la gráfica de barras para comparación
+        fig = go.Figure()
+        fig.add_trace(go.Bar(name='Valor Inicial', x=nombres, y=valores_iniciales, marker_color='lightblue'))
+        fig.add_trace(go.Bar(name='Valor Actual', x=nombres, y=valores_actuales, marker_color='darkblue'))
+
+        # Configurar el diseño de la gráfica
+        fig.update_layout(title='Comparación de Valor de Mercado Inicial y Actual',
+                          xaxis_title='Jugadores',
+                          yaxis_title='Valor de Mercado (€)',
+                          barmode='group')
+
+        # Mostrar la gráfica en Streamlit
+        st.plotly_chart(fig)
+    else:
+        st.write("No se encontraron ambos jugadores. Verifica los nombres e intenta de nuevo.")
