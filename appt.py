@@ -227,6 +227,8 @@ elif menu_principal == "Herramientas":
         - Pandas
         - Streamlit
         - Plotly
+        - Google Colab
+        - Jupiter Notebook
         """)
     
     with col2:
