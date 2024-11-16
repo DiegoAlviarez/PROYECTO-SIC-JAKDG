@@ -82,7 +82,7 @@ menu_content = {
 
 # Configuración de la página
 st.title("ANÁLISIS DE LAS ESTADÍSTICAS QUE TIENEN MAYOR CORRELACIÓN CON EL VALOR DE MERCADO DE LOS JUGADORES DE FUTBOL EN ESPAÑA.")
-
+st.write("Exploración interactiva de las estadísticas de jugadores basada en sus valores de mercado.")
 # Crear el menú de navegación
 st.sidebar.title("Menú de Navegación")
 menu_selection = st.sidebar.radio("Secciones:", list(menu_content.keys()))
@@ -103,15 +103,6 @@ if menu_selection == "Análisis Interactivo":
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
 
-# Configuración de la página
-st.title("ANÁLISIS DE LAS ESTADÍSTICAS QUE TIENEN MAYOR CORRELACIÓN CON EL VALOR DE MERCADO DE LOS JUGADORES DE FUTBOL EN ESPAÑA.")
-st.write("Exploración interactiva de las estadísticas de jugadores basada en sus valores de mercado.")
-
-# Carga y muestra una animación Lottie
-lottie_url = "https://lottie.host/embed/3d48d4b9-51ad-4b7d-9d28-5e248cace11/Rz3QtSCq3.json"
-lottie_coding = load_lottieurl(lottie_url)
-if lottie_coding:
-    st_lottie(lottie_coding, height=200, width=300)
 
 # Cargar el archivo CSV desde GitHub (Nuevo CSV)
 file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados%20(3).csv'
