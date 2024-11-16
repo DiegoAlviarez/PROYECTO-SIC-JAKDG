@@ -34,6 +34,14 @@ def convertir_valor(valor):
             return int(float(valor.replace(" mill. €", "").replace(",", ".")) * 1_000_000)
     return None
 
+# Función para convertir URLs a imágenes en cualquier columna
+def convertir_urls_a_imagenes(df):
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if df_copy[col].astype(str).str.startswith('http').any():
+            df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
+    return df_copy
+
 # Función para generar valores mensuales interpolados
 def generar_valores_mensuales(valor_inicial, valor_final):
     fecha_inicio = datetime(2024, 1, 1)
@@ -42,7 +50,7 @@ def generar_valores_mensuales(valor_inicial, valor_final):
     valores = []
     
     # Generar lista de meses
-    fecha_actual = fecha_actual.replace(day=1)  # Normalizar al primer día del mes
+    fecha_actual = fecha_actual.replace(day=1)
     fecha = fecha_inicio
     while fecha <= fecha_actual:
         meses.append(fecha.strftime('%B %Y'))
@@ -61,6 +69,9 @@ def generar_valores_mensuales(valor_inicial, valor_final):
 data = load_data()
 data["Valor de Mercado en 01/01/2024"] = data["Valor de Mercado en 01/01/2024"].apply(convertir_valor)
 data["Valor de Mercado Actual"] = data["Valor de Mercado Actual"].apply(convertir_valor)
+
+# Convertir las URLs en imágenes para la tabla
+data_con_imagenes = convertir_urls_a_imagenes(data)
 
 # Sidebar con menú principal
 st.sidebar.title("Menú Principal")
@@ -81,8 +92,11 @@ if menu_principal == "Introducción":
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
     
-    st.subheader("Tabla de Jugadores")
-    st.dataframe(data)
+    # Mostrar la tabla con imágenes de los jugadores
+    with st.container():
+        st.subheader("Datos de Jugadores")
+        st.write("Tabla con imágenes de los jugadores y valores de mercado.")
+        st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
 
 elif menu_principal == "Metodología":
     st.title("Metodología")
@@ -193,7 +207,6 @@ elif menu_principal == "Metodología":
         )
         st.plotly_chart(fig)
 
-# El resto del código permanece igual...
 elif menu_principal == "Objetivos":
     st.title("Objetivos del Proyecto")
     st.write("""
