@@ -13,6 +13,96 @@ def load_lottieurl(url):
         return None
     return r.json()
 
+# JSON para estructurar los menús
+menu_content = {
+    "Introducción": {
+        "title": "Introducción",
+        "content": (
+            "La industria del fútbol ha evolucionado significativamente, "
+            "convirtiéndose en un mercado donde el valor de los jugadores "
+            "es un indicador crucial de su desempeño y potencial.\n\n"
+            "Este proyecto se centra en el análisis de datos de jugadores "
+            "de la liga 2024, utilizando un archivo CSV que contiene información "
+            "sobre el valor de mercado de cada jugador."
+        ),
+    },
+    "Objetivos del Proyecto": {
+        "title": "Objetivos del Proyecto",
+        "content": (
+            "1. Analizar y visualizar el valor de mercado de los jugadores.\n"
+            "2. Evaluar el incremento porcentual del valor de mercado a lo largo del tiempo."
+        ),
+    },
+    "Metodología": {
+        "title": "Metodología",
+        "content": (
+            "**Recolección de Datos:** Se utilizará un archivo CSV que contiene datos "
+            "actualizados sobre los jugadores, incluyendo nombre, posición, nacionalidad, "
+            "edad, equipo, y valores de mercado.\n\n"
+            "**Análisis de Datos:**\n"
+            "- Carga del archivo CSV utilizando bibliotecas de Python como pandas.\n"
+            "- Limpieza de datos para asegurar la consistencia y la precisión.\n"
+            "- Cálculo de estadísticas descriptivas, como el valor medio y la desviación estándar.\n\n"
+            "**Visualización:**\n"
+            "- Gráficos de barras para comparar valores entre jugadores y equipos.\n"
+            "- Gráficos de líneas para mostrar la evolución en el tiempo."
+        ),
+    },
+    "Herramientas y Tecnologías": {
+        "title": "Herramientas y Tecnologías",
+        "content": (
+            "1. Python\n"
+            "2. Pandas\n"
+            "3. Matplotlib y Seaborn\n"
+            "4. Jupyter Notebook"
+        ),
+    },
+    "Resultados Esperados": {
+        "title": "Resultados Esperados",
+        "content": (
+            "- Un informe con análisis estadísticos sobre el valor de mercado.\n"
+            "- Gráficos que faciliten la comprensión de las tendencias.\n"
+            "- Recomendaciones útiles para clubes y agentes."
+        ),
+    },
+    "Conclusiones": {
+        "title": "Conclusiones",
+        "content": (
+            "Este proyecto proporcionará una comprensión más profunda del valor de mercado "
+            "de los jugadores en la liga 2024 y servirá como base para futuros análisis. "
+            "Los datos pueden impactar decisiones estratégicas en la gestión de equipos y "
+            "la contratación de jugadores."
+        ),
+    },
+    "Análisis Interactivo": {
+        "title": "Análisis Interactivo",
+        "content": "Aquí puedes explorar tablas, gráficas y comparaciones interactivas."
+    }
+}
+
+# Configuración de la página
+st.title("ANÁLISIS DE LAS ESTADÍSTICAS QUE TIENEN MAYOR CORRELACIÓN CON EL VALOR DE MERCADO DE LOS JUGADORES DE FUTBOL EN ESPAÑA.")
+
+# Crear el menú de navegación
+st.sidebar.title("Menú de Navegación")
+menu_selection = st.sidebar.radio("Secciones:", list(menu_content.keys()))
+
+# Mostrar contenido dinámico según el menú seleccionado
+selected_section = menu_content[menu_selection]
+st.header(selected_section["title"])
+st.write(selected_section["content"])
+
+# Integrar el análisis interactivo solo si se selecciona "Análisis Interactivo"
+if menu_selection == "Análisis Interactivo":
+    # Código existente para el análisis interactivo aquí
+    # (Incluye las gráficas, tablas y comparaciones)
+    
+    # Cargar y mostrar animación Lottie
+    lottie_url = "https://lottie.host/embed/3d48d4b9-51ad-4b7d-9d28-5e248cace11/Rz3QtSCq3.json"
+    lottie_coding = load_lottieurl(lottie_url)
+    if lottie_coding:
+        st_lottie(lottie_coding, height=200, width=300)
+
 # Configuración de la página
 st.title("ANÁLISIS DE LAS ESTADÍSTICAS QUE TIENEN MAYOR CORRELACIÓN CON EL VALOR DE MERCADO DE LOS JUGADORES DE FUTBOL EN ESPAÑA.")
 st.write("Exploración interactiva de las estadísticas de jugadores basada en sus valores de mercado.")
