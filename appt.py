@@ -1,7 +1,10 @@
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
+from datetime import datetime
 import requests
 from streamlit_lottie import st_lottie
+
 
 # Función para cargar animaciones Lottie desde una URL
 def load_lottieurl(url):
