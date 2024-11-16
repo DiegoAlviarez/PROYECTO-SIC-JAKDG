@@ -284,4 +284,4 @@ else:  # Conclusiones
 
 # Footer
 st.sidebar.markdown("---")
-st.sidebar.info("Desarrollado con ❤️ usando Streamlit")
+st.sidebar.info("ANÁLISIS DE LAS ESTADÍSTICAS QUE TIENEN MAYOR CORRELACIÓN CON EL VALOR DE MERCADO DE LOS JUGADORES DE FUTBOL EN ESPAÑA")
