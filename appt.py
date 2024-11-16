@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 from streamlit_lottie import st_lottie
 
@@ -34,6 +34,29 @@ def convertir_valor(valor):
             return int(float(valor.replace(" mill. €", "").replace(",", ".")) * 1_000_000)
     return None
 
+# Función para generar valores mensuales interpolados
+def generar_valores_mensuales(valor_inicial, valor_final):
+    fecha_inicio = datetime(2024, 1, 1)
+    fecha_actual = datetime.now()
+    meses = []
+    valores = []
+    
+    # Generar lista de meses
+    fecha_actual = fecha_actual.replace(day=1)  # Normalizar al primer día del mes
+    fecha = fecha_inicio
+    while fecha <= fecha_actual:
+        meses.append(fecha.strftime('%B %Y'))
+        fecha += timedelta(days=32)
+        fecha = fecha.replace(day=1)
+    
+    # Calcular valores interpolados
+    num_meses = len(meses)
+    for i in range(num_meses):
+        valor = valor_inicial + (valor_final - valor_inicial) * (i / (num_meses - 1))
+        valores.append(valor)
+    
+    return meses, valores
+
 # Cargar y preparar datos
 data = load_data()
 data["Valor de Mercado en 01/01/2024"] = data["Valor de Mercado en 01/01/2024"].apply(convertir_valor)
@@ -46,7 +69,6 @@ menu_principal = st.sidebar.radio(
     ["Introducción", "Objetivos", "Metodología", "Herramientas", "Resultados", "Conclusiones"]
 )
 
-# Contenido según la selección del menú
 if menu_principal == "Introducción":
     st.title("Introducción")
     st.write("""
@@ -54,29 +76,17 @@ if menu_principal == "Introducción":
     donde el valor de los jugadores es un indicador crucial de su desempeño y potencial.
     """)
     
-    # Mostrar animación Lottie
     lottie_url = "https://lottie.host/embed/3d48d4b9-51ad-4b7d-9d28-5e248cace11/Rz3QtSCq3.json"
     lottie_coding = load_lottieurl(lottie_url)
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
     
-    # Mostrar tabla de jugadores
     st.subheader("Tabla de Jugadores")
     st.dataframe(data)
-
-elif menu_principal == "Objetivos":
-    st.title("Objetivos del Proyecto")
-    st.write("""
-    ### Objetivos Principales:
-    - Analizar y visualizar el valor de mercado de los jugadores
-    - Evaluar el incremento porcentual del valor de mercado a lo largo del tiempo
-    - Identificar patrones y tendencias en la valoración de jugadores
-    """)
 
 elif menu_principal == "Metodología":
     st.title("Metodología")
     
-    # Submenu para visualizaciones
     visualizacion = st.selectbox(
         "Seleccione tipo de visualización:",
         ["Evolución Individual", "Comparación entre Jugadores", "Tendencias Generales"]
@@ -88,20 +98,37 @@ elif menu_principal == "Metodología":
         
         jugador = data[data['Nombre'] == nombre_jugador]
         if not jugador.empty:
-            # Crear gráfica de evolución individual
+            valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+            valor_final = jugador['Valor de Mercado Actual'].iloc[0]
+            
+            meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
+            
             fig = go.Figure()
-            fig.add_trace(go.Bar(
-                x=['Enero 2024', 'Actual'],
-                y=[jugador['Valor de Mercado en 01/01/2024'].iloc[0], 
-                   jugador['Valor de Mercado Actual'].iloc[0]],
-                name=nombre_jugador
+            fig.add_trace(go.Scatter(
+                x=meses,
+                y=valores,
+                mode='lines+markers',
+                name=nombre_jugador,
+                line=dict(width=3),
+                marker=dict(size=10)
             ))
+            
             fig.update_layout(
-                title=f'Evolución del Valor de Mercado de {nombre_jugador}',
-                xaxis_title='Fecha',
-                yaxis_title='Valor de Mercado (€)'
+                title=f'Evolución Mensual del Valor de Mercado de {nombre_jugador}',
+                xaxis_title='Mes',
+                yaxis_title='Valor de Mercado (€)',
+                hovermode='x unified',
+                showlegend=True
             )
             st.plotly_chart(fig)
+            
+            # Mostrar tabla de valores mensuales
+            df_mensual = pd.DataFrame({
+                'Mes': meses,
+                'Valor de Mercado (€)': [f"€{int(v):,}" for v in valores]
+            })
+            st.write("Valores mensuales:")
+            st.dataframe(df_mensual)
             
     elif visualizacion == "Comparación entre Jugadores":
         st.subheader("Comparación entre Jugadores")
@@ -112,48 +139,69 @@ elif menu_principal == "Metodología":
             jugador2 = st.selectbox("Segundo jugador:", data['Nombre'].unique())
         
         if jugador1 and jugador2:
-            jugadores_data = data[data['Nombre'].isin([jugador1, jugador2])]
-            
-            # Crear gráfica de comparación
             fig = go.Figure()
+            
             for jugador in [jugador1, jugador2]:
-                datos_jugador = jugadores_data[jugadores_data['Nombre'] == jugador]
-                fig.add_trace(go.Bar(
+                datos_jugador = data[data['Nombre'] == jugador]
+                valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                valor_final = datos_jugador['Valor de Mercado Actual'].iloc[0]
+                
+                meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
+                
+                fig.add_trace(go.Scatter(
+                    x=meses,
+                    y=valores,
+                    mode='lines+markers',
                     name=jugador,
-                    x=['Enero 2024', 'Actual'],
-                    y=[datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0],
-                       datos_jugador['Valor de Mercado Actual'].iloc[0]]
+                    line=dict(width=3),
+                    marker=dict(size=10)
                 ))
             
             fig.update_layout(
-                title='Comparación de Valores de Mercado',
-                barmode='group',
-                xaxis_title='Fecha',
-                yaxis_title='Valor de Mercado (€)'
+                title='Comparación de Evolución Mensual del Valor de Mercado',
+                xaxis_title='Mes',
+                yaxis_title='Valor de Mercado (€)',
+                hovermode='x unified',
+                showlegend=True
             )
             st.plotly_chart(fig)
     
     elif visualizacion == "Tendencias Generales":
         st.subheader("Tendencias Generales del Mercado")
         
-        # Crear gráfica de tendencias generales
         fig = go.Figure()
         for _, jugador in data.iterrows():
+            valor_inicial = jugador['Valor de Mercado en 01/01/2024']
+            valor_final = jugador['Valor de Mercado Actual']
+            
+            meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
+            
             fig.add_trace(go.Scatter(
-                x=['Enero 2024', 'Actual'],
-                y=[jugador['Valor de Mercado en 01/01/2024'],
-                   jugador['Valor de Mercado Actual']],
+                x=meses,
+                y=valores,
+                mode='lines',
                 name=jugador['Nombre'],
-                mode='lines+markers'
+                opacity=0.5
             ))
         
         fig.update_layout(
             title='Tendencias Generales del Valor de Mercado',
-            xaxis_title='Fecha',
+            xaxis_title='Mes',
             yaxis_title='Valor de Mercado (€)',
+            hovermode='x unified',
             showlegend=True
         )
         st.plotly_chart(fig)
+
+# El resto del código permanece igual...
+elif menu_principal == "Objetivos":
+    st.title("Objetivos del Proyecto")
+    st.write("""
+    ### Objetivos Principales:
+    - Analizar y visualizar el valor de mercado de los jugadores
+    - Evaluar el incremento porcentual del valor de mercado a lo largo del tiempo
+    - Identificar patrones y tendencias en la valoración de jugadores
+    """)
 
 elif menu_principal == "Herramientas":
     st.title("Herramientas y Tecnologías")
@@ -183,13 +231,11 @@ elif menu_principal == "Resultados":
     
     with tab1:
         st.header("Estadísticas Generales")
-        # Mostrar estadísticas descriptivas
         st.write("Estadísticas descriptivas de los valores de mercado:")
         st.dataframe(data[['Valor de Mercado en 01/01/2024', 'Valor de Mercado Actual']].describe())
         
     with tab2:
         st.header("Análisis de Tendencias")
-        # Mostrar gráfico de tendencias
         fig = go.Figure()
         fig.add_trace(go.Box(
             y=data['Valor de Mercado en 01/01/2024'],
