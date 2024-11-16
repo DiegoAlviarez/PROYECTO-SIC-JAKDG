@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
-from datetime import datetime
 import requests
 from streamlit_lottie import st_lottie
 
@@ -82,28 +79,28 @@ menu_content = {
 
 # Configuración de la página
 st.title("ANÁLISIS DE LAS ESTADÍSTICAS QUE TIENEN MAYOR CORRELACIÓN CON EL VALOR DE MERCADO DE LOS JUGADORES DE FUTBOL EN ESPAÑA.")
-st.write("Exploración interactiva de las estadísticas de jugadores basada en sus valores de mercado.")
+
 # Crear el menú de navegación
 st.sidebar.title("Menú de Navegación")
 menu_selection = st.sidebar.radio("Secciones:", list(menu_content.keys()))
 
 # Mostrar contenido dinámico según el menú seleccionado
 selected_section = menu_content[menu_selection]
+
+# Establecer anclaje para cada sección
+st.markdown(f'<a id="{menu_selection}"></a>', unsafe_allow_html=True)
+
 st.header(selected_section["title"])
 st.write(selected_section["content"])
 
-# Integrar el análisis interactivo solo si se selecciona "Análisis Interactivo"
+# Si se selecciona "Análisis Interactivo", mostrar gráficos e información
 if menu_selection == "Análisis Interactivo":
-    # Código existente para el análisis interactivo aquí
-    # (Incluye las gráficas, tablas y comparaciones)
-    
-    # Cargar y mostrar animación Lottie
+    # Código para el análisis interactivo aquí
     lottie_url = "https://lottie.host/embed/3d48d4b9-51ad-4b7d-9d28-5e248cace11/Rz3QtSCq3.json"
     lottie_coding = load_lottieurl(lottie_url)
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
-
-
+    
 # Cargar el archivo CSV desde GitHub (Nuevo CSV)
 file_path = 'https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados%20(3).csv'
 data = pd.read_csv(file_path)
