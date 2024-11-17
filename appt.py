@@ -92,11 +92,19 @@ if menu_principal == "Introducción":
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
     
+    # Formatear valores de mercado con símbolo de euro
+    data["Valor de Mercado en 01/01/2024"] = data["Valor de Mercado en 01/01/2024"].apply(lambda x: f"€{int(x):,}" if pd.notnull(x) else "N/A")
+    data["Valor de Mercado Actual"] = data["Valor de Mercado Actual"].apply(lambda x: f"€{int(x):,}" if pd.notnull(x) else "N/A")
+
+    # Convertir las URLs en imágenes para la tabla
+    data_con_imagenes = convertir_urls_a_imagenes(data)
+
     # Mostrar la tabla con imágenes de los jugadores
     with st.container():
         st.subheader("Datos de Jugadores")
         st.write("Tabla con imágenes de los jugadores y valores de mercado.")
         st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
+
 
 elif menu_principal == "Metodología":
     st.title("Metodología")
