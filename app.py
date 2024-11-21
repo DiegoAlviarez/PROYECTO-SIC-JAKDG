@@ -419,7 +419,7 @@ elif menu_principal == "Resultados":
             if liga_seleccionada == "LaLiga":
                 st.dataframe(spain_data[['Valor de Mercado en 01/01/2024', 'Valor de Mercado Actual']].describe())
             else:
-                st.dataframe(bundesliga_data[['Valor de Mercado']].describe())
+                st.dataframe(bundesliga_data[['Valor de Mercado en 01']].describe())
         
         with tab2:
             st.header("Análisis de Tendencias")
@@ -436,8 +436,12 @@ elif menu_principal == "Resultados":
                 ))
             else:
                 fig.add_trace(go.Box(
-                    y=bundesliga_data['Valor de Mercado'],
-                    name='Valor de Mercado'
+                    y=bundesliga_data['Valor de Mercado en 01/01/2024'],
+                    name='Enero 2024'
+                ))
+                fig.add_trace(go.Box(
+                    y=bundesliga_data['Valor de Mercado Actual'],
+                    name='Actual'
                 ))
             
             fig.update_layout(
