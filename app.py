@@ -194,7 +194,8 @@ elif menu_principal == "Metodología":
                 
                 # Datos Bundesliga
                 datos_jugador2 = bundesliga_data[bundesliga_data['Nombre'] == jugador2]
-                valor2 = datos_jugador2['Valor de Mercado'].iloc[0]
+                valor_inicial1 = datos_jugador1['Valor de Mercado en 01/01/2024'].iloc[0]
+                valor_final1 = datos_jugador1['Valor de Mercado Actual'].iloc[0]
                 meses2, valores2 = generar_valores_mensuales(valor2, valor2)
                 
                 fig.add_trace(go.Scatter(
@@ -283,7 +284,8 @@ elif menu_principal == "Metodología":
             
             # Bundesliga
             for _, jugador in bundesliga_data.iterrows():
-                valor = jugador['Valor de Mercado']
+                valor_inicial1 = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                valor_final1 = jugador['Valor de Mercado Actual'].iloc[0]
                 meses, valores = generar_valores_mensuales(valor, valor)
                 fig.add_trace(go.Scatter(
                     x=meses,
