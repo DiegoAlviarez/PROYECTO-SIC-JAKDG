@@ -72,8 +72,8 @@ spain_data["Valor de Mercado en 01/01/2024"] = spain_data["Valor de Mercado en 0
 spain_data["Valor de Mercado Actual"] = spain_data["Valor de Mercado Actual"].apply(convertir_valor)
 
 # Procesar datos de Bundesliga
-bundesliga_data["Valor de Mercado"] = bundesliga_data["Valor de Mercado"].apply(convertir_valor)
-
+bundesliga_data["Valor de Mercado en 01/01/2024"] = bundesliga_data["Valor de Mercado en 01/01/2024"].apply(convertir_valor)
+bundesliga_data["Valor de Mercado Actual"] = bundesliga_data["Valor de Mercado Actual"].apply(convertir_valor)
 # Sidebar con menú principal
 st.sidebar.title("Menú Principal")
 menu_principal = st.sidebar.radio(
