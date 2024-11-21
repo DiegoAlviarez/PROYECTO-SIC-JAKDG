@@ -144,7 +144,8 @@ elif menu_principal == "Metodología":
                 valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
                 valor_final = jugador['Valor de Mercado Actual'].iloc[0]
             else:
-                valor_inicial = valor_final = jugador['Valor de Mercado'].iloc[0]
+                valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                valor_final = jugador['Valor de Mercado Actual'].iloc[0]
             
             meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
             
@@ -241,7 +242,8 @@ elif menu_principal == "Metodología":
                         valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0]
                         valor_final = datos_jugador['Valor de Mercado Actual'].iloc[0]
                     else:
-                        valor_inicial = valor_final = datos_jugador['Valor de Mercado'].iloc[0]
+                        valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                        valor_final = datos_jugador['Valor de Mercado Actual'].iloc[0]
                     
                     meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
                     
@@ -311,7 +313,8 @@ elif menu_principal == "Metodología":
                     valor_inicial = jugador['Valor de Mercado en 01/01/2024']
                     valor_final = jugador['Valor de Mercado Actual']
                 else:
-                    valor_inicial = valor_final = jugador['Valor de Mercado']
+                    valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                        valor_final = datos_jugador['Valor de Mercado Actual'].iloc[0]
                 
                 meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
                 
@@ -381,7 +384,7 @@ elif menu_principal == "Resultados":
             
             with col2:
                 st.subheader("Bundesliga")
-                st.dataframe(bundesliga_data[["Valor de Mercado en 01/01/2024', 'Valor de Mercado Actual'']].describe())
+                st.dataframe(bundesliga_data[['Valor de Mercado en 01/01/2024', 'Valor de Mercado Actual']].describe())
         
         with tab2:
             st.header("Análisis Comparativo")
@@ -393,7 +396,7 @@ elif menu_principal == "Resultados":
             ))
             
             fig.add_trace(go.Box(
-                y=bundesliga_data['Valor de Mercado'],
+                y=bundesliga_data['Valor de Mercado Actual'],
                 name='Bundesliga'
             ))
             
@@ -419,7 +422,7 @@ elif menu_principal == "Resultados":
             if liga_seleccionada == "LaLiga":
                 st.dataframe(spain_data[['Valor de Mercado en 01/01/2024', 'Valor de Mercado Actual']].describe())
             else:
-                st.dataframe(bundesliga_data[['Valor de Mercado en 01']].describe())
+                st.dataframe(bundesliga_data[['Valor de Mercado en 01/01/2024', 'Valor de Mercado Actual']].describe())
         
         with tab2:
             st.header("Análisis de Tendencias")
