@@ -381,7 +381,7 @@ elif menu_principal == "Resultados":
             
             with col2:
                 st.subheader("Bundesliga")
-                st.dataframe(bundesliga_data[['Valor de Mercado']].describe())
+                st.dataframe(bundesliga_data[["Valor de Mercado en 01/01/2024', 'Valor de Mercado Actual'']].describe())
         
         with tab2:
             st.header("Análisis Comparativo")
