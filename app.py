@@ -212,7 +212,7 @@ elif menu_principal == "Metodología":
         # Para las otras visualizaciones (Evolución Individual, Comparación entre Jugadores, etc.)
         visualizacion = st.selectbox(
             "Seleccione tipo de visualización:",
-            ["Evolución Individual", "Comparación entre Jugadores", "Tendencias Generales"]
+            ["Evolución Individual", "Comparación entre Jugadores"]
         )
 
         # Selección de datos según la liga
@@ -372,57 +372,7 @@ elif menu_principal == "Metodología":
                     - **Expectativas futuras en el mercado de fichajes**.
                     """)
 
-        # Visualización: Tendencias Generales
-        elif visualizacion == "Tendencias Generales":
-            if liga_seleccionada == "Comparativa":
-                st.subheader("Tendencias Generales del Mercado - Comparativa entre Ligas")
 
-                fig = go.Figure()
-
-                # LaLiga
-                for _, jugador in spain_data.iterrows():
-                    valor_inicial = jugador['Valor de Mercado en 01/01/2024']
-                    valor_final = jugador['Valor de Mercado Actual']
-                    meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
-                    fig.add_trace(go.Scatter(
-                        x=meses,
-                        y=valores,
-                        mode='lines',
-                        name=f"{jugador['Nombre']} (LaLiga)",
-                        opacity=0.3
-                    ))
-
-                # Bundesliga
-                for _, jugador in bundesliga_data.iterrows():
-                    valor_inicial = jugador['Valor de Mercado en 01/01/2024']
-                    valor_final = jugador['Valor de Mercado Actual']
-                    meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
-                    fig.add_trace(go.Scatter(
-                        x=meses,
-                        y=valores,
-                        mode='lines',
-                        name=f"{jugador['Nombre']} (Bundesliga)",
-                        opacity=0.3
-                    ))
-
-                fig.update_layout(
-                    title='Tendencias Generales del Valor de Mercado - Comparativa entre Ligas',
-                    xaxis_title='Mes',
-                    yaxis_title='Valor de Mercado (€)',
-                    hovermode='x unified'
-                )
-                st.plotly_chart(fig)
-
-                # Análisis
-                st.write("""
-                ### Análisis de Tendencias Generales:
-                Las tendencias generales muestran patrones de evolución en los valores de mercado de los jugadores. 
-                - **LaLiga**: Algunos jugadores destacan con valores que aumentan significativamente.
-                - **Bundesliga**: Presenta una mayor homogeneidad en las tendencias.
-
-                Estas observaciones permiten identificar jugadores clave en cada liga y analizar cómo los mercados 
-                valoran diferentes perfiles de talento.
-                """)
 
 elif menu_principal == "Objetivos":
     st.title("Objetivos del Proyecto")
