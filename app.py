@@ -119,8 +119,7 @@ if menu_principal == "Introducción":
     if liga_seleccionada != "Comparativa":
         with st.container():
             st.subheader(title)
-            data_con_imagenes = convertir_urls_a_imagenes(data_to_show)
-            st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
+            
 
 elif menu_principal == "Metodología":
     st.title("Metodología")
