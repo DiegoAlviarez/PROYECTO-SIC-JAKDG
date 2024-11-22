@@ -177,95 +177,60 @@ elif menu_principal == "Metodología":
             st.dataframe(df_mensual)
     
     elif visualizacion == "Comparación entre Jugadores":
-        if liga_seleccionada == "Comparativa":
-            st.subheader("Comparación entre Jugadores de LaLiga y Bundesliga")
-            col1, col2 = st.columns(2)
-            with col1:
-                jugador1 = st.selectbox("Jugador de LaLiga:", spain_data['Nombre'].unique())
-            with col2:
-                jugador2 = st.selectbox("Jugador de Bundesliga:", bundesliga_data['Nombre'].unique())
+    if liga_seleccionada == "Comparativa":
+        st.subheader("Comparación entre Jugadores de LaLiga y Bundesliga")
+        col1, col2 = st.columns(2)
+        
+        # Selección de jugadores de ambas ligas
+        with col1:
+            jugador1 = st.selectbox("Jugador de LaLiga:", spain_data['Nombre'].unique())
+        with col2:
+            jugador2 = st.selectbox("Jugador de Bundesliga:", bundesliga_data['Nombre'].unique())
+        
+        if jugador1 and jugador2:
+            fig = go.Figure()
             
-            if jugador1 and jugador2:
-                fig = go.Figure()
-                
-                # Datos LaLiga
-                datos_jugador1 = spain_data[spain_data['Nombre'] == jugador1]
-                valor_inicial1 = datos_jugador1['Valor de Mercado en 01/01/2024'].iloc[0]
-                valor_final1 = datos_jugador1['Valor de Mercado Actual'].iloc[0]
-                meses1, valores1 = generar_valores_mensuales(valor_inicial1, valor_final1)
-                
-                # Datos Bundesliga
-                datos_jugador2 = bundesliga_data[bundesliga_data['Nombre'] == jugador2]
-                valor_inicial1 = datos_jugador1['Valor de Mercado en 01/01/2024'].iloc[0]
-                valor_final1 = datos_jugador1['Valor de Mercado Actual'].iloc[0]
-                meses2, valores2 = generar_valores_mensuales(valor2, valor2)
-                
-                fig.add_trace(go.Scatter(
-                    x=meses1,
-                    y=valores1,
-                    mode='lines+markers',
-                    name=f"{jugador1} (LaLiga)",
-                    line=dict(width=3),
-                    marker=dict(size=10)
-                ))
-                
-                fig.add_trace(go.Scatter(
-                    x=meses2,
-                    y=valores2,
-                    mode='lines+markers',
-                    name=f"{jugador2} (Bundesliga)",
-                    line=dict(width=3),
-                    marker=dict(size=10)
-                ))
-                
-                fig.update_layout(
-                    title='Comparación de Valores de Mercado entre Ligas',
-                    xaxis_title='Mes',
-                    yaxis_title='Valor de Mercado (€)',
-                    hovermode='x unified',
-                    showlegend=True
-                )
-                st.plotly_chart(fig)
-        else:
-            st.subheader(f"Comparación entre Jugadores - {liga_seleccionada}")
-            col1, col2 = st.columns(2)
-            with col1:
-                jugador1 = st.selectbox("Primer jugador:", data['Nombre'].unique())
-            with col2:
-                jugador2 = st.selectbox("Segundo jugador:", data['Nombre'].unique())
+            # Datos del jugador de LaLiga
+            datos_jugador1 = spain_data[spain_data['Nombre'] == jugador1]
+            valor_inicial1 = datos_jugador1['Valor de Mercado en 01/01/2024'].iloc[0]
+            valor_final1 = datos_jugador1['Valor de Mercado Actual'].iloc[0]
+            meses1, valores1 = generar_valores_mensuales(valor_inicial1, valor_final1)
             
-            if jugador1 and jugador2:
-                fig = go.Figure()
-                
-                for jugador in [jugador1, jugador2]:
-                    datos_jugador = data[data['Nombre'] == jugador]
-                    if liga_seleccionada == "LaLiga":
-                        valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0]
-                        valor_final = datos_jugador['Valor de Mercado Actual'].iloc[0]
-                    else:
-                        valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024']
-                        valor_final = datos_jugador['Valor de Mercado Actual']
-                    
-                    meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
-                    
-                    fig.add_trace(go.Scatter(
-                        x=meses,
-                        y=valores,
-                        mode='lines+markers',
-                        name=jugador,
-                        line=dict(width=3),
-                        marker=dict(size=10)
-                    ))
-                
-                fig.update_layout(
-                    title=f'Comparación de Valores de Mercado - {liga_seleccionada}',
-                    xaxis_title='Mes',
-                    yaxis_title='Valor de Mercado (€)',
-                    hovermode='x unified',
-                    showlegend=True
-                )
-                st.plotly_chart(fig)
-    
+            # Datos del jugador de Bundesliga
+            datos_jugador2 = bundesliga_data[bundesliga_data['Nombre'] == jugador2]
+            valor_inicial2 = datos_jugador2['Valor de Mercado en 01/01/2024'].iloc[0]
+            valor_final2 = datos_jugador2['Valor de Mercado Actual'].iloc[0]
+            meses2, valores2 = generar_valores_mensuales(valor_inicial2, valor_final2)
+            
+            # Añadir trazas al gráfico
+            fig.add_trace(go.Scatter(
+                x=meses1,
+                y=valores1,
+                mode='lines+markers',
+                name=f"{jugador1} (LaLiga)",
+                line=dict(width=3),
+                marker=dict(size=10)
+            ))
+            
+            fig.add_trace(go.Scatter(
+                x=meses2,
+                y=valores2,
+                mode='lines+markers',
+                name=f"{jugador2} (Bundesliga)",
+                line=dict(width=3),
+                marker=dict(size=10)
+            ))
+            
+            # Configuración del gráfico
+            fig.update_layout(
+                title='Comparación de Valores de Mercado entre Ligas',
+                xaxis_title='Mes',
+                yaxis_title='Valor de Mercado (€)',
+                hovermode='x unified',
+                showlegend=True
+            )
+            st.plotly_chart(fig)
+
     elif visualizacion == "Tendencias Generales":
         if liga_seleccionada == "Comparativa":
             st.subheader("Tendencias Generales del Mercado - Comparativa entre Ligas")
