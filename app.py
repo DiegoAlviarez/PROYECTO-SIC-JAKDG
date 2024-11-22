@@ -446,6 +446,7 @@ elif menu_principal == "Resultados":
                 fig.add_trace(go.Box(
                     y=bundesliga_data['Valor de Mercado Actual'],
                     name='Actual'
+                ))
             
             fig.update_layout(
                 title=f'Distribución de Valores de Mercado - {liga_seleccionada}',
