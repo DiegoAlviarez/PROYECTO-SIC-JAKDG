@@ -88,6 +88,15 @@ liga_seleccionada = st.sidebar.selectbox(
     ["LaLiga", "Bundesliga", "Comparativa"]
 )
 
+# Función para convertir URLs a imágenes
+def convertir_urls_a_imagenes(df):
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if df_copy[col].astype(str).str.startswith('http').any():
+            df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
+    return df_copy
+
+# Código principal
 if menu_principal == "Introducción":
     st.title("Introducción")
     st.write("""
@@ -95,12 +104,13 @@ if menu_principal == "Introducción":
     donde el valor de los jugadores es un indicador crucial de su desempeño y potencial.
     """)
 
-    # Cargar la animación Lottie
+    # Cargar animación Lottie
     lottie_url = "https://lottie.host/embed/3d48d4b9-51ad-4b7d-9d28-5e248cace11/Rz3QtSCq3.json"
     lottie_coding = load_lottieurl(lottie_url)
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
 
+    # Mostrar datos según la liga seleccionada
     if liga_seleccionada == "LaLiga":
         data_to_show = spain_data
         title = "Datos de Jugadores de LaLiga"
@@ -108,18 +118,30 @@ if menu_principal == "Introducción":
         data_to_show = bundesliga_data
         title = "Datos de Jugadores de Bundesliga"
     else:
-        # Mostrar tablas una debajo de la otra
         st.subheader("Comparativa entre LaLiga y Bundesliga")
-        st.write("### LaLiga")
-        st.dataframe(spain_data)
-        st.write("### Bundesliga")
-        st.dataframe(bundesliga_data)
+        
+        # Mostrar tablas en Comparativa
+        def generar_tabla_html(data):
+            data_con_imagenes = convertir_urls_a_imagenes(data)
+            return data_con_imagenes.to_html(escape=False, index=False)
 
+        # Tabla de LaLiga
+        st.write("### LaLiga")
+        tabla_laliga_html = generar_tabla_html(spain_data)
+        st.markdown(tabla_laliga_html, unsafe_allow_html=True)
+
+        # Tabla de Bundesliga
+        st.write("### Bundesliga")
+        tabla_bundesliga_html = generar_tabla_html(bundesliga_data)
+        st.markdown(tabla_bundesliga_html, unsafe_allow_html=True)
+
+    # Mostrar tabla individual con imágenes (si no es Comparativa)
     if liga_seleccionada != "Comparativa":
         with st.container():
             st.subheader(title)
             data_con_imagenes = convertir_urls_a_imagenes(data_to_show)
             st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
+
 
 
 elif menu_principal == "Metodología":
