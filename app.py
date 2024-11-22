@@ -94,12 +94,13 @@ if menu_principal == "Introducción":
     La industria del fútbol ha evolucionado significativamente, convirtiéndose en un mercado 
     donde el valor de los jugadores es un indicador crucial de su desempeño y potencial.
     """)
-    
+
+    # Cargar la animación Lottie
     lottie_url = "https://lottie.host/embed/3d48d4b9-51ad-4b7d-9d28-5e248cace11/Rz3QtSCq3.json"
     lottie_coding = load_lottieurl(lottie_url)
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
-    
+
     if liga_seleccionada == "LaLiga":
         data_to_show = spain_data
         title = "Datos de Jugadores de LaLiga"
@@ -107,20 +108,19 @@ if menu_principal == "Introducción":
         data_to_show = bundesliga_data
         title = "Datos de Jugadores de Bundesliga"
     else:
+        # Mostrar tablas una debajo de la otra
         st.subheader("Comparativa entre LaLiga y Bundesliga")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write("### LaLiga")
-            st.dataframe(spain_data)
-        with col2:
-            st.write("### Bundesliga")
-            st.dataframe(bundesliga_data)
-        
+        st.write("### LaLiga")
+        st.dataframe(spain_data)
+        st.write("### Bundesliga")
+        st.dataframe(bundesliga_data)
+
     if liga_seleccionada != "Comparativa":
         with st.container():
             st.subheader(title)
             data_con_imagenes = convertir_urls_a_imagenes(data_to_show)
             st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
+
 
 elif menu_principal == "Metodología":
     st.title("Metodología")
