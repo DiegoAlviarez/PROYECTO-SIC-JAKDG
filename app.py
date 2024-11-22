@@ -156,8 +156,7 @@ if menu_principal == "Introducción":
 elif menu_principal == "Metodología":
     st.title("Metodología")
     
-    # Comprobar si la opción seleccionada es "Comparativa"
-   if liga_seleccionada == "Comparativa":
+        if liga_seleccionada == "Comparativa":
     st.subheader("Comparativa de Valor de Mercado: LaLiga vs Bundesliga")
 
     # Preparar los datos para la gráfica comparativa
@@ -209,6 +208,7 @@ elif menu_principal == "Metodología":
     
     Este análisis puede ser útil para comprender las dinámicas de cada liga y orientar estrategias de inversión.
     """)
+
 
     
     else:
