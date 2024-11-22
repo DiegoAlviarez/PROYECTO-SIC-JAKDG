@@ -23,7 +23,7 @@ def load_lottieurl(url):
 @st.cache_data
 def load_data():
     spain_data = pd.read_csv('https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados%20(3).csv')
-    bundesliga_data = pd.read_csv('https://github.com/AndersonP444/PROYECTO-SIC-JAKDG/blob/main/valores_mercado_bundesliga_actualizado_v2.csv')
+    bundesliga_data = pd.read_csv('https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_bundesliga_actualizado_v2.csv')
     return spain_data, bundesliga_data
 
 # Función para convertir valores de mercado
