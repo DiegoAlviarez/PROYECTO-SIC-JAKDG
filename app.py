@@ -96,7 +96,36 @@ def convertir_urls_a_imagenes(df):
             df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
     return df_copy
 
-# Código principal
+# Estilo CSS para tablas responsivas
+def agregar_estilo_css():
+    st.markdown(
+        """
+        <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            word-wrap: break-word;
+        }
+        th {
+            background-color: #444444;
+            color: white;
+        }
+        img {
+            max-width: 40px; /* Reducir tamaño de las imágenes */
+            height: auto;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Llamar al estilo CSS
+agregar_estilo_css()
+
 if menu_principal == "Introducción":
     st.title("Introducción")
     st.write("""
@@ -145,6 +174,7 @@ if menu_principal == "Introducción":
             st.subheader(title)
             data_con_imagenes = convertir_urls_a_imagenes(data_to_show)
             st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
+
 
 
 
