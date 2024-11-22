@@ -151,66 +151,61 @@ if menu_principal == "Introducción":
             st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
 
 
-
-
 elif menu_principal == "Metodología":
     st.title("Metodología")
     
-        if liga_seleccionada == "Comparativa":
-    st.subheader("Comparativa de Valor de Mercado: LaLiga vs Bundesliga")
+    if liga_seleccionada == "Comparativa":
+        st.subheader("Comparativa de Valor de Mercado: LaLiga vs Bundesliga")
 
-    # Preparar los datos para la gráfica comparativa
-    fig = go.Figure()
+        # Preparar los datos para la gráfica comparativa
+        fig = go.Figure()
 
-    # Añadir los datos de LaLiga
-    fig.add_trace(go.Violin(
-        y=spain_data['Valor de Mercado Actual'],
-        name='LaLiga',
-        box_visible=True,  # Mostrar la caja del box plot dentro del violín
-        meanline_visible=True,  # Mostrar la línea de la media
-        line_color='blue',
-        fillcolor='rgba(0, 0, 255, 0.3)',  # Relleno azul translúcido
-        opacity=0.7
-    ))
+        # Añadir los datos de LaLiga
+        fig.add_trace(go.Violin(
+            y=spain_data['Valor de Mercado Actual'],
+            name='LaLiga',
+            box_visible=True,  # Mostrar la caja del box plot dentro del violín
+            meanline_visible=True,  # Mostrar la línea de la media
+            line_color='blue',
+            fillcolor='rgba(0, 0, 255, 0.3)',  # Relleno azul translúcido
+            opacity=0.7
+        ))
 
-    # Añadir los datos de Bundesliga
-    fig.add_trace(go.Violin(
-        y=bundesliga_data['Valor de Mercado Actual'],
-        name='Bundesliga',
-        box_visible=True,  # Mostrar la caja del box plot dentro del violín
-        meanline_visible=True,  # Mostrar la línea de la media
-        line_color='green',
-        fillcolor='rgba(0, 255, 0, 0.3)',  # Relleno verde translúcido
-        opacity=0.7
-    ))
+        # Añadir los datos de Bundesliga
+        fig.add_trace(go.Violin(
+            y=bundesliga_data['Valor de Mercado Actual'],
+            name='Bundesliga',
+            box_visible=True,  # Mostrar la caja del box plot dentro del violín
+            meanline_visible=True,  # Mostrar la línea de la media
+            line_color='green',
+            fillcolor='rgba(0, 255, 0, 0.3)',  # Relleno verde translúcido
+            opacity=0.7
+        ))
 
-    # Actualizar el diseño de la gráfica
-    fig.update_layout(
-        title="Distribución de Valores de Mercado por Liga",
-        yaxis_title="Valor de Mercado (€)",
-        xaxis_title="Ligas",
-        violingap=0.5,  # Espacio entre las gráficas de violín
-        violingroupgap=0.3,
-        showlegend=False
-    )
+        # Actualizar el diseño de la gráfica
+        fig.update_layout(
+            title="Distribución de Valores de Mercado por Liga",
+            yaxis_title="Valor de Mercado (€)",
+            xaxis_title="Ligas",
+            violingap=0.5,  # Espacio entre las gráficas de violín
+            violingroupgap=0.3,
+            showlegend=False
+        )
 
-    # Mostrar la gráfica comparativa
-    st.plotly_chart(fig)
+        # Mostrar la gráfica comparativa
+        st.plotly_chart(fig)
 
-    # Añadir el análisis escrito debajo de la gráfica
-    st.write("""
-    ### Análisis Comparativo:
-    La visualización de las distribuciones usando gráficos de violín permite observar con mayor claridad 
-    la densidad de los valores de mercado en cada liga. 
-    
-    - **LaLiga**: Presenta una distribución con una mayor concentración de jugadores en valores altos.
-    - **Bundesliga**: Muestra una dispersión más uniforme, indicando diferencias en la estructura del mercado.
-    
-    Este análisis puede ser útil para comprender las dinámicas de cada liga y orientar estrategias de inversión.
-    """)
-
-
-    
+        # Añadir el análisis escrito debajo de la gráfica
+        st.write("""
+        ### Análisis Comparativo:
+        La visualización de las distribuciones usando gráficos de violín permite observar con mayor claridad 
+        la densidad de los valores de mercado en cada liga. 
+        
+        - **LaLiga**: Presenta una distribución con una mayor concentración de jugadores en valores altos.
+        - **Bundesliga**: Muestra una dispersión más uniforme, indicando diferencias en la estructura del mercado.
+        
+        Este análisis puede ser útil para comprender las dinámicas de cada liga y orientar estrategias de inversión.
+        """)
     else:
         # Para las otras visualizaciones (Evolución Individual, Comparación entre Jugadores, etc.)
         visualizacion = st.selectbox(
@@ -229,12 +224,8 @@ elif menu_principal == "Metodología":
             
             jugador = data[data['Nombre'] == nombre_jugador]
             if not jugador.empty:
-                if liga_seleccionada == "LaLiga":
-                    valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
-                    valor_final = jugador['Valor de Mercado Actual'].iloc[0]
-                else:
-                    valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
-                    valor_final = jugador['Valor de Mercado Actual'].iloc[0]
+                valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                valor_final = jugador['Valor de Mercado Actual'].iloc[0]
                 
                 meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
                 
@@ -263,6 +254,9 @@ elif menu_principal == "Metodología":
                 })
                 st.write("Valores mensuales:")
                 st.dataframe(df_mensual)
+
+
+
 
 elif menu_principal == "Objetivos":
     st.title("Objetivos del Proyecto")
