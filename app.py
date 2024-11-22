@@ -96,47 +96,15 @@ def convertir_urls_a_imagenes(df):
             df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
     return df_copy
 
-# Función para agregar estilos CSS
-def agregar_estilo_css():
-    st.markdown(
-        """
-        <style>
-        /* Contenedor para tablas con scroll horizontal */
-        .dataframe-container {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        th, td {
-            text-align: left;
-            padding: 6px;
-            word-wrap: break-word;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        th {
-            background-color: #444444;
-            color: white;
-        }
-        td img {
-            max-width: 40px; /* Ajustar tamaño de las imágenes */
-            height: auto;
-            display: block;
-            margin: auto;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+# Función para convertir URLs a imágenes
+def convertir_urls_a_imagenes(df):
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if df_copy[col].astype(str).str.startswith('http').any():
+            df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
+    return df_copy
 
-# Aplicar estilos CSS personalizados
-agregar_estilo_css()
-
+# Código principal
 if menu_principal == "Introducción":
     st.title("Introducción")
     st.write("""
@@ -144,45 +112,44 @@ if menu_principal == "Introducción":
     donde el valor de los jugadores es un indicador crucial de su desempeño y potencial.
     """)
 
-    # Animación Lottie
+    # Cargar animación Lottie
     lottie_url = "https://lottie.host/embed/3d48d4b9-51ad-4b7d-9d28-5e248cace11/Rz3QtSCq3.json"
     lottie_coding = load_lottieurl(lottie_url)
     if lottie_coding:
         st_lottie(lottie_coding, height=200, width=300)
 
-    # Comparativa entre tablas
-    if liga_seleccionada == "Comparativa":
-        st.subheader("Comparativa entre LaLiga y Bundesliga")
-
-        # Dividir en dos columnas
-        col1, col2 = st.columns(2)
-
-        def generar_tabla_con_imagenes(data):
-            data_con_imagenes = convertir_urls_a_imagenes(data)
-            return f'<div class="dataframe-container">{data_con_imagenes.to_html(escape=False, index=False)}</div>'
-
-        # Mostrar la tabla de LaLiga
-        with col1:
-            st.write("### LaLiga")
-            st.markdown(generar_tabla_con_imagenes(spain_data), unsafe_allow_html=True)
-
-        # Mostrar la tabla de Bundesliga
-        with col2:
-            st.write("### Bundesliga")
-            st.markdown(generar_tabla_con_imagenes(bundesliga_data), unsafe_allow_html=True)
-
-    # Mostrar tabla individual si no es comparativa
+    # Mostrar datos según la liga seleccionada
+    if liga_seleccionada == "LaLiga":
+        data_to_show = spain_data
+        title = "Datos de Jugadores de LaLiga"
+    elif liga_seleccionada == "Bundesliga":
+        data_to_show = bundesliga_data
+        title = "Datos de Jugadores de Bundesliga"
     else:
-        if liga_seleccionada == "LaLiga":
-            data_to_show = spain_data
-            title = "Datos de Jugadores de LaLiga"
-        elif liga_seleccionada == "Bundesliga":
-            data_to_show = bundesliga_data
-            title = "Datos de Jugadores de Bundesliga"
+        st.subheader("Comparativa entre LaLiga y Bundesliga")
+        
+        # Mostrar tablas en Comparativa
+        def generar_tabla_html(data):
+            data_con_imagenes = convertir_urls_a_imagenes(data)
+            return data_con_imagenes.to_html(escape=False, index=False)
 
-        st.subheader(title)
-        data_con_imagenes = convertir_urls_a_imagenes(data_to_show)
-        st.markdown(f'<div class="dataframe-container">{data_con_imagenes.to_html(escape=False, index=False)}</div>', unsafe_allow_html=True)
+        # Tabla de LaLiga
+        st.write("### LaLiga")
+        tabla_laliga_html = generar_tabla_html(spain_data)
+        st.markdown(tabla_laliga_html, unsafe_allow_html=True)
+
+        # Tabla de Bundesliga
+        st.write("### Bundesliga")
+        tabla_bundesliga_html = generar_tabla_html(bundesliga_data)
+        st.markdown(tabla_bundesliga_html, unsafe_allow_html=True)
+
+    # Mostrar tabla individual con imágenes (si no es Comparativa)
+    if liga_seleccionada != "Comparativa":
+        with st.container():
+            st.subheader(title)
+            data_con_imagenes = convertir_urls_a_imagenes(data_to_show)
+            st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
+
 
 
 
