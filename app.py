@@ -119,21 +119,25 @@ if menu_principal == "Introducción":
         title = "Datos de Jugadores de Bundesliga"
     else:
         st.subheader("Comparativa entre LaLiga y Bundesliga")
-        
-        # Mostrar tablas en Comparativa
+
+        # Mostrar tablas en dos columnas
+        col1, col2 = st.columns(2)
+
         def generar_tabla_html(data):
             data_con_imagenes = convertir_urls_a_imagenes(data)
             return data_con_imagenes.to_html(escape=False, index=False)
 
-        # Tabla de LaLiga
-        st.write("### LaLiga")
-        tabla_laliga_html = generar_tabla_html(spain_data)
-        st.markdown(tabla_laliga_html, unsafe_allow_html=True)
+        # Columna 1: LaLiga
+        with col1:
+            st.write("### LaLiga")
+            tabla_laliga_html = generar_tabla_html(spain_data)
+            st.markdown(tabla_laliga_html, unsafe_allow_html=True)
 
-        # Tabla de Bundesliga
-        st.write("### Bundesliga")
-        tabla_bundesliga_html = generar_tabla_html(bundesliga_data)
-        st.markdown(tabla_bundesliga_html, unsafe_allow_html=True)
+        # Columna 2: Bundesliga
+        with col2:
+            st.write("### Bundesliga")
+            tabla_bundesliga_html = generar_tabla_html(bundesliga_data)
+            st.markdown(tabla_bundesliga_html, unsafe_allow_html=True)
 
     # Mostrar tabla individual con imágenes (si no es Comparativa)
     if liga_seleccionada != "Comparativa":
