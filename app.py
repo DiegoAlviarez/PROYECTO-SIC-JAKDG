@@ -106,19 +106,21 @@ if menu_principal == "Introducción":
     elif liga_seleccionada == "Bundesliga":
         data_to_show = bundesliga_data
         title = "Datos de Jugadores de Bundesliga"
-    else:
-        st.subheader("Comparativa entre LaLiga y Bundesliga")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write("### LaLiga")
-            st.dataframe(spain_data)
-        with col2:
-            st.write("### Bundesliga")
-            st.dataframe(bundesliga_data)
         
-    if liga_seleccionada != "Comparativa":
-        with st.container():
-            st.subheader(title)
+    if liga_seleccionada == "Comparativa":
+    st.subheader("Comparativa entre LaLiga y Bundesliga")
+    
+    # Eliminar la columna 'Jugador' antes de mostrar las tablas
+    spain_data_comparativa = spain_data.drop(columns=["Jugador"], errors="ignore")
+    bundesliga_data_comparativa = bundesliga_data.drop(columns=["Jugador"], errors="ignore")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("### LaLiga")
+        st.dataframe(spain_data_comparativa)
+    with col2:
+        st.write("### Bundesliga")
+        st.dataframe(bundesliga_data_comparativa)
             
 
 elif menu_principal == "Metodología":
