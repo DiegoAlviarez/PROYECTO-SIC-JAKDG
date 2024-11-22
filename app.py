@@ -125,58 +125,108 @@ if menu_principal == "Introducción":
 elif menu_principal == "Metodología":
     st.title("Metodología")
     
-    visualizacion = st.selectbox(
-        "Seleccione tipo de visualización:",
-        ["Evolución Individual", "Comparación entre Jugadores", "Tendencias Generales"]
-    )
-    
-    if liga_seleccionada == "LaLiga":
-        data = spain_data
-    elif liga_seleccionada == "Bundesliga":
-        data = bundesliga_data
-    
-    if visualizacion == "Evolución Individual":
-        st.subheader(f"Evolución Individual del Valor de Mercado - {liga_seleccionada}")
-        nombre_jugador = st.selectbox("Selecciona un jugador:", data['Nombre'].unique())
+    # Comprobar si la opción seleccionada es "Comparativa"
+    if liga_seleccionada == "Comparativa":
+        st.subheader("Comparativa de Valor de Mercado: LaLiga vs Bundesliga")
         
-        jugador = data[data['Nombre'] == nombre_jugador]
-        if not jugador.empty:
-            if liga_seleccionada == "LaLiga":
-                valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
-                valor_final = jugador['Valor de Mercado Actual'].iloc[0]
-            else:
-                valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
-                valor_final = jugador['Valor de Mercado Actual'].iloc[0]
-            
-            meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
-            
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                x=meses,
-                y=valores,
-                mode='lines+markers',
-                name=nombre_jugador,
-                line=dict(width=3),
-                marker=dict(size=10)
-            ))
-            
-            fig.update_layout(
-                title=f'Evolución Mensual del Valor de Mercado de {nombre_jugador}',
-                xaxis_title='Mes',
-                yaxis_title='Valor de Mercado (€)',
-                hovermode='x unified',
-                showlegend=True
-            )
-            st.plotly_chart(fig)
-            
-            df_mensual = pd.DataFrame({
-                'Mes': meses,
-                'Valor de Mercado (€)': [f"€{int(v):,}" for v in valores]
-            })
-            st.write("Valores mensuales:")
-            st.dataframe(df_mensual)
-    
+        # Preparar los datos para la gráfica comparativa
+        fig = go.Figure()
+        
+        # Añadir los datos de LaLiga
+        fig.add_trace(go.Box(
+            y=spain_data['Valor de Mercado Actual'],
+            name='LaLiga',
+            boxmean='sd',  # Mostrar la media y las desviaciones
+            marker=dict(color='blue')
+        ))
 
+        # Añadir los datos de Bundesliga
+        fig.add_trace(go.Box(
+            y=bundesliga_data['Valor de Mercado Actual'],
+            name='Bundesliga',
+            boxmean='sd',  # Mostrar la media y las desviaciones
+            marker=dict(color='green')
+        ))
+
+        # Actualizar el diseño de la gráfica
+        fig.update_layout(
+            title="Distribución de Valores de Mercado por Liga",
+            yaxis_title="Valor de Mercado (€)",
+            showlegend=False
+        )
+        
+        # Mostrar la gráfica comparativa
+        st.plotly_chart(fig)
+        
+        # Añadir el análisis escrito debajo de la gráfica
+        st.write("""
+        ### Análisis Comparativo:
+        Al comparar los valores de mercado actuales entre **LaLiga** y **Bundesliga**, 
+        se observan diferencias clave en la distribución de los valores. 
+        La **LaLiga** presenta una mayor concentración de jugadores de alto valor, 
+        mientras que en **Bundesliga** los valores tienden a estar más dispersos.
+        
+        Estas diferencias podrían estar relacionadas con factores como:
+        - **Tamaño de los equipos** y su capacidad económica.
+        - **Desarrollo de jugadores** y su potencial de crecimiento.
+        - **Intereses de los inversores** y su influencia en la valoración de jugadores.
+        
+        Esta comparativa puede ayudar a identificar tendencias de inversión y áreas 
+        de oportunidad dentro de los mercados de ambas ligas.
+        """)
+    
+    else:
+        # Para las otras visualizaciones (Evolución Individual, Comparación entre Jugadores, etc.)
+        visualizacion = st.selectbox(
+            "Seleccione tipo de visualización:",
+            ["Evolución Individual", "Comparación entre Jugadores", "Tendencias Generales"]
+        )
+        
+        if liga_seleccionada == "LaLiga":
+            data = spain_data
+        elif liga_seleccionada == "Bundesliga":
+            data = bundesliga_data
+        
+        if visualizacion == "Evolución Individual":
+            st.subheader(f"Evolución Individual del Valor de Mercado - {liga_seleccionada}")
+            nombre_jugador = st.selectbox("Selecciona un jugador:", data['Nombre'].unique())
+            
+            jugador = data[data['Nombre'] == nombre_jugador]
+            if not jugador.empty:
+                if liga_seleccionada == "LaLiga":
+                    valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                    valor_final = jugador['Valor de Mercado Actual'].iloc[0]
+                else:
+                    valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                    valor_final = jugador['Valor de Mercado Actual'].iloc[0]
+                
+                meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
+                
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=meses,
+                    y=valores,
+                    mode='lines+markers',
+                    name=nombre_jugador,
+                    line=dict(width=3),
+                    marker=dict(size=10)
+                ))
+                
+                fig.update_layout(
+                    title=f'Evolución Mensual del Valor de Mercado de {nombre_jugador}',
+                    xaxis_title='Mes',
+                    yaxis_title='Valor de Mercado (€)',
+                    hovermode='x unified',
+                    showlegend=True
+                )
+                st.plotly_chart(fig)
+                
+                df_mensual = pd.DataFrame({
+                    'Mes': meses,
+                    'Valor de Mercado (€)': [f"€{int(v):,}" for v in valores]
+                })
+                st.write("Valores mensuales:")
+                st.dataframe(df_mensual)
 
 elif menu_principal == "Objetivos":
     st.title("Objetivos del Proyecto")
