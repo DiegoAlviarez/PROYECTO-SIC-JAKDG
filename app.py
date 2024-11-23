@@ -324,53 +324,7 @@ elif menu_principal == "Metodología":
                     Este análisis resalta las diferencias en las trayectorias de los jugadores seleccionados, 
                     permitiendo observar cómo han evolucionado sus valores de mercado a lo largo del tiempo.
                     """)
-            else:
-                st.subheader(f"Comparación entre Jugadores - {liga_seleccionada}")
-                col1, col2 = st.columns(2)
-                with col1:
-                    jugador1 = st.selectbox("Primer jugador:", data['Nombre'].unique())
-                with col2:
-                    jugador2 = st.selectbox("Segundo jugador:", data['Nombre'].unique())
 
-                if jugador1 and jugador2:
-                    fig = go.Figure()
-
-                    for jugador in [jugador1, jugador2]:
-                        datos_jugador = data[data['Nombre'] == jugador]
-                        valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0]
-                        valor_final = datos_jugador['Valor de Mercado Actual'].iloc[0]
-
-                        meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
-
-                        fig.add_trace(go.Scatter(
-                            x=meses,
-                            y=valores,
-                            mode='lines+markers',
-                            name=jugador,
-                            line=dict(width=3),
-                            marker=dict(size=10)
-                        ))
-
-                    fig.update_layout(
-                        title=f'Comparación de Valores de Mercado - {liga_seleccionada}',
-                        xaxis_title='Mes',
-                        yaxis_title='Valor de Mercado (€)',
-                        hovermode='x unified',
-                        showlegend=True
-                    )
-                    st.plotly_chart(fig)
-
-                    # Análisis
-                    st.write(f"""
-                    ### Análisis de la Comparación:
-                    Comparando los valores de mercado de **{jugador1}** y **{jugador2}** en la misma liga, 
-                    es posible observar diferencias significativas en sus trayectorias.
-                    
-                    Estos patrones pueden estar relacionados con:
-                    - **Rendimiento reciente**.
-                    - **Impacto en sus equipos**.
-                    - **Expectativas futuras en el mercado de fichajes**.
-                    """)
 
 
 
