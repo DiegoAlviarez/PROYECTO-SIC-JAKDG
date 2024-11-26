@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
 from datetime import datetime, timedelta
 import requests
 from streamlit_lottie import st_lottie
@@ -22,8 +23,8 @@ def load_lottieurl(url):
 # Cargar datos
 @st.cache_data
 def load_data():
-    spain_data = pd.read_csv('https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/CSV%20DESPUES%20DEL%20PROCESAMIENTO%20DE%20DATOS/valores_mercado_actualizados_con_estadisticas.csv')
-    bundesliga_data = pd.read_csv('https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/CSV%20DESPUES%20DEL%20PROCESAMIENTO%20DE%20DATOS/valores_mercado_bundesliga_con_estadisticas.csv')
+    spain_data = pd.read_csv('https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_actualizados%20(3).csv')
+    bundesliga_data = pd.read_csv('https://raw.githubusercontent.com/AndersonP444/PROYECTO-SIC-JAKDG/main/valores_mercado_bundesliga_actualizado_v2.csv')
     return spain_data, bundesliga_data
 
 # Función para convertir valores de mercado
@@ -88,6 +89,23 @@ liga_seleccionada = st.sidebar.selectbox(
     ["LaLiga", "Bundesliga", "Comparativa"]
 )
 
+# Función para convertir URLs a imágenes
+def convertir_urls_a_imagenes(df):
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if df_copy[col].astype(str).str.startswith('http').any():
+            df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
+    return df_copy
+
+# Función para convertir URLs a imágenes
+def convertir_urls_a_imagenes(df):
+    df_copy = df.copy()
+    for col in df_copy.columns:
+        if df_copy[col].astype(str).str.startswith('http').any():
+            df_copy[col] = df_copy[col].apply(lambda url: f'<img src="{url}" width="50">' if isinstance(url, str) and url.startswith('http') else url)
+    return df_copy
+
+# Código principal
 if menu_principal == "Introducción":
     st.title("Introducción")
     st.write("""
@@ -111,33 +129,27 @@ if menu_principal == "Introducción":
     else:
         st.subheader("Comparativa entre LaLiga y Bundesliga")
         
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write("### LaLiga")
-            tabla_laliga_html = convertir_urls_a_imagenes(spain_data)
-            st.markdown(tabla_laliga_html.to_html(escape=False), unsafe_allow_html=True)
-        
-        with col2:
-            st.write("### Bundesliga")
-            tabla_bundesliga_html = convertir_urls_a_imagenes(bundesliga_data)
-            st.markdown(tabla_bundesliga_html.to_html(escape=False), unsafe_allow_html=True)
+        # Mostrar tablas en Comparativa
+        def generar_tabla_html(data):
+            data_con_imagenes = convertir_urls_a_imagenes(data)
+            return data_con_imagenes.to_html(escape=False, index=False)
 
-    # Mostrar tabla individual si no es Comparativa
+        # Tabla de LaLiga
+        st.write("### LaLiga")
+        tabla_laliga_html = generar_tabla_html(spain_data)
+        st.markdown(tabla_laliga_html, unsafe_allow_html=True)
+
+        # Tabla de Bundesliga
+        st.write("### Bundesliga")
+        tabla_bundesliga_html = generar_tabla_html(bundesliga_data)
+        st.markdown(tabla_bundesliga_html, unsafe_allow_html=True)
+
+    # Mostrar tabla individual con imágenes (si no es Comparativa)
     if liga_seleccionada != "Comparativa":
         with st.container():
             st.subheader(title)
             data_con_imagenes = convertir_urls_a_imagenes(data_to_show)
             st.markdown(data_con_imagenes.to_html(escape=False), unsafe_allow_html=True)
-
-elif menu_principal == "Objetivos":
-    st.title("Objetivos del Proyecto")
-    st.write("""
-    ### Objetivos Principales:
-    - Analizar y visualizar el valor de mercado de los jugadores en LaLiga y Bundesliga
-    - Evaluar el incremento porcentual del valor de mercado a lo largo del tiempo
-    - Identificar patrones y tendencias en la valoración de jugadores
-    - Comparar las valoraciones entre las diferentes ligas
-    """)
 
 if menu_principal == "Metodología":
     st.title("Metodología")
@@ -364,92 +376,182 @@ if menu_principal == "Metodología":
         - Diferencias entre ligas: {'Los valores sugieren una valoración más alta en LaLiga' if datos_laliga['Valor de Mercado Actual'] > datos_bundesliga['Valor de Mercado Actual'] else 'Los valores sugieren una valoración más alta en Bundesliga'}
         - Oportunidades de mercado: {'Potencial de inversión en crecimiento' if variacion_laliga > 0 or variacion_bundesliga > 0 else 'Momento de cautela en inversiones'}
         """)
-
+    
     else:
-        # Análisis individual de cada liga
-        data = spain_data if liga_seleccionada == "LaLiga" else bundesliga_data
-        st.subheader(f"Análisis de {liga_seleccionada}")
-
-        # 1. Distribución de valores
-        fig_box = go.Figure()
-        fig_box.add_trace(go.Box(
-            y=data['Valor de Mercado Actual'],
-            name='Valor Actual',
-            boxpoints='all',
-            jitter=0.3,
-            pointpos=-1.8
-        ))
-
-        fig_box.update_layout(
-            title=f"Distribución de Valores de Mercado en {liga_seleccionada}",
-            yaxis_title="Valor de Mercado (€)",
-            showlegend=False
+        # Para las otras visualizaciones (Evolución Individual, Comparación entre Jugadores, etc.)
+        visualizacion = st.selectbox(
+            "Seleccione tipo de visualización:",
+            ["Evolución Individual", "Comparación entre Jugadores"]
         )
 
-        st.plotly_chart(fig_box)
+        # Selección de datos según la liga
+        if liga_seleccionada == "LaLiga":
+            data = spain_data
+        elif liga_seleccionada == "Bundesliga":
+            data = bundesliga_data
+        
+        # Visualización: Evolución Individual
+        if visualizacion == "Evolución Individual":
+            st.subheader(f"Evolución Individual del Valor de Mercado - {liga_seleccionada}")
+            nombre_jugador = st.selectbox("Selecciona un jugador:", data['Nombre'].unique())
+            
+            jugador = data[data['Nombre'] == nombre_jugador]
+            if not jugador.empty:
+                valor_inicial = jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                valor_final = jugador['Valor de Mercado Actual'].iloc[0]
+                
+                meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
+                
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=meses,
+                    y=valores,
+                    mode='lines+markers',
+                    name=nombre_jugador,
+                    line=dict(width=3),
+                    marker=dict(size=10)
+                ))
+                
+                fig.update_layout(
+                    title=f'Evolución Mensual del Valor de Mercado de {nombre_jugador}',
+                    xaxis_title='Mes',
+                    yaxis_title='Valor de Mercado (€)',
+                    hovermode='x unified',
+                    showlegend=True
+                )
+                st.plotly_chart(fig)
+                
+                df_mensual = pd.DataFrame({
+                    'Mes': meses,
+                    'Valor de Mercado (€)': [f"€{int(v):,}" for v in valores]
+                })
+                st.write("Valores mensuales:")
+                st.dataframe(df_mensual)
 
-        # 2. Top 10 jugadores por valor
-        top_10 = data.nlargest(10, 'Valor de Mercado Actual')
-        fig_top10 = go.Figure(data=[
-            go.Bar(
-                x=top_10['Nombre'],
-                y=top_10['Valor de Mercado Actual'],
-                marker_color='lightblue'
-            )
-        ])
+        # Visualización: Comparación entre Jugadores
+        elif visualizacion == "Comparación entre Jugadores":
+            if liga_seleccionada == "Comparativa":
+                st.subheader("Comparación entre Jugadores de LaLiga y Bundesliga")
+                col1, col2 = st.columns(2)
+                with col1:
+                    jugador1 = st.selectbox("Jugador de LaLiga:", spain_data['Nombre'].unique())
+                with col2:
+                    jugador2 = st.selectbox("Jugador de Bundesliga:", bundesliga_data['Nombre'].unique())
 
-        fig_top10.update_layout(
-            title=f"Top 10 Jugadores por Valor de Mercado en {liga_seleccionada}",
-            xaxis_title="Jugador",
-            yaxis_title="Valor de Mercado (€)",
-            xaxis_tickangle=-45
-        )
+                if jugador1 and jugador2:
+                    fig = go.Figure()
 
-        st.plotly_chart(fig_top10)
+                    # Datos LaLiga
+                    datos_jugador1 = spain_data[spain_data['Nombre'] == jugador1]
+                    valor_inicial1 = datos_jugador1['Valor de Mercado en 01/01/2024'].iloc[0]
+                    valor_final1 = datos_jugador1['Valor de Mercado Actual'].iloc[0]
+                    meses1, valores1 = generar_valores_mensuales(valor_inicial1, valor_final1)
 
-        # 3. Análisis por edad
-        fig_edad = px.scatter(
-            data,
-            x='Edad',
-            y='Valor de Mercado Actual',
-            title=f"Relación Edad-Valor en {liga_seleccionada}",
-            labels={'Valor de Mercado Actual': 'Valor de Mercado (€)'}
-        )
+                    # Datos Bundesliga
+                    datos_jugador2 = bundesliga_data[bundesliga_data['Nombre'] == jugador2]
+                    valor_inicial2 = datos_jugador2['Valor de Mercado en 01/01/2024'].iloc[0]
+                    valor_final2 = datos_jugador2['Valor de Mercado Actual'].iloc[0]
+                    meses2, valores2 = generar_valores_mensuales(valor_inicial2, valor_final2)
 
-        st.plotly_chart(fig_edad)
+                    fig.add_trace(go.Scatter(
+                        x=meses1,
+                        y=valores1,
+                        mode='lines+markers',
+                        name=f"{jugador1} (LaLiga)",
+                        line=dict(width=3),
+                        marker=dict(size=10)
+                    ))
 
-        # Análisis detallado de la liga
-        valor_promedio = data['Valor de Mercado Actual'].mean()
-        valor_maximo = data['Valor de Mercado Actual'].max()
-        jugador_max_valor = data.loc[data['Valor de Mercado Actual'].idxmax(), 'Nombre']
-        edad_promedio = data['Edad'].mean()
+                    fig.add_trace(go.Scatter(
+                        x=meses2,
+                        y=valores2,
+                        mode='lines+markers',
+                        name=f"{jugador2} (Bundesliga)",
+                        line=dict(width=3),
+                        marker=dict(size=10)
+                    ))
 
-        st.write(f"""
-        ### Análisis Detallado de {liga_seleccionada}
+                    fig.update_layout(
+                        title='Comparación de Valores de Mercado entre Ligas',
+                        xaxis_title='Mes',
+                        yaxis_title='Valor de Mercado (€)',
+                        hovermode='x unified',
+                        showlegend=True
+                    )
+                    st.plotly_chart(fig)
 
-        #### Estadísticas Generales
-        - Valor promedio de mercado: €{valor_promedio:,.2f}
-        - Valor máximo: €{valor_maximo:,.2f} ({jugador_max_valor})
-        - Edad promedio: {edad_promedio:.1f} años
+                    # Análisis
+                    st.write(f"""
+                    ### Análisis de la Comparación:
+                    - **{jugador1} (LaLiga)**:
+                        - Valor Inicial: €{int(valor_inicial1):,}
+                        - Valor Actual: €{int(valor_final1):,}
+                    - **{jugador2} (Bundesliga)**:
+                        - Valor Inicial: €{int(valor_inicial2):,}
+                        - Valor Actual: €{int(valor_final2):,}
 
-        #### Interpretación de las Gráficas
+                    Este análisis resalta las diferencias en las trayectorias de los jugadores seleccionados, 
+                    permitiendo observar cómo han evolucionado sus valores de mercado a lo largo del tiempo.
+                    """)
+            else:
+                st.subheader(f"Comparación entre Jugadores - {liga_seleccionada}")
+                col1, col2 = st.columns(2)
+                with col1:
+                    jugador1 = st.selectbox("Primer jugador:", data['Nombre'].unique())
+                with col2:
+                    jugador2 = st.selectbox("Segundo jugador:", data['Nombre'].unique())
 
-        1. **Distribución de Valores**
-        - Muestra la dispersión general de los valores de mercado
-        - Identifica valores atípicos y concentraciones
-        - Permite entender la estructura económica de la liga
+                if jugador1 and jugador2:
+                    fig = go.Figure()
 
-        2. **Top 10 Jugadores**
-        - Destaca los jugadores más valiosos
-        - Permite identificar líderes de mercado
-        - Útil para análisis de inversión y scouting
+                    for jugador in [jugador1, jugador2]:
+                        datos_jugador = data[data['Nombre'] == jugador]
+                        valor_inicial = datos_jugador['Valor de Mercado en 01/01/2024'].iloc[0]
+                        valor_final = datos_jugador['Valor de Mercado Actual'].iloc[0]
 
-        3. **Relación Edad-Valor**
-        - Visualiza la correlación entre edad y valor
-        - Ayuda a entender políticas de valoración
-        - Identifica patrones de inversión por edad
-        """)
+                        meses, valores = generar_valores_mensuales(valor_inicial, valor_final)
 
+                        fig.add_trace(go.Scatter(
+                            x=meses,
+                            y=valores,
+                            mode='lines+markers',
+                            name=jugador,
+                            line=dict(width=3),
+                            marker=dict(size=10)
+                        ))
+
+                    fig.update_layout(
+                        title=f'Comparación de Valores de Mercado - {liga_seleccionada}',
+                        xaxis_title='Mes',
+                        yaxis_title='Valor de Mercado (€)',
+                        hovermode='x unified',
+                        showlegend=True
+                    )
+                    st.plotly_chart(fig)
+
+                    # Análisis
+                    st.write(f"""
+                    ### Análisis de la Comparación:
+                    Comparando los valores de mercado de **{jugador1}** y **{jugador2}** en la misma liga, 
+                    es posible observar diferencias significativas en sus trayectorias.
+                    
+                    Estos patrones pueden estar relacionados con:
+                    - **Rendimiento reciente**.
+                    - **Impacto en sus equipos**.
+                    - **Expectativas futuras en el mercado de fichajes**.
+                    """)
+
+
+
+elif menu_principal == "Objetivos":
+    st.title("Objetivos del Proyecto")
+    st.write("""
+    ### Objetivos Principales:
+    - Analizar y visualizar el valor de mercado de los jugadores en LaLiga y Bundesliga
+    - Evaluar el incremento porcentual del valor de mercado a lo largo del tiempo
+    - Identificar patrones y tendencias en la valoración de jugadores
+    - Comparar las valoraciones entre las diferentes ligas
+    """)
 
 elif menu_principal == "Herramientas":
     st.title("Herramientas y Tecnologías")
